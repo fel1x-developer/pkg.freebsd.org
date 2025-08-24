@@ -236,7 +236,6 @@
 									<TableHead>Repository</TableHead>
 									<TableHead>ABI</TableHead>
 									<TableHead>Architecture</TableHead>
-									<TableHead>Size</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>

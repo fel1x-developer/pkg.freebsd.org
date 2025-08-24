@@ -40,6 +40,7 @@ export const packages = pgTable('packages', {
 	comment: text('comment').notNull(),
 	maintainer: text('maintainer').notNull(),
 	www: text('www'),
+	repository: text('repository').notNull(),
 	abi: abi('abi').notNull(),
 	arch: arch('arch').notNull(),
 	prefix: text('prefix').notNull(),
@@ -61,3 +62,6 @@ export const packages = pgTable('packages', {
 	users: jsonb('users').$type<string[]>().notNull(),
 	groups: jsonb('groups').$type<string[]>().notNull()
 });
+
+export type Package = typeof packages.$inferSelect;
+export type NewPackage = typeof packages.$inferInsert;

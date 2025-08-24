@@ -267,7 +267,6 @@
 										</TableCell>
 										<TableCell>{pkg.abi}</TableCell>
 										<TableCell>{pkg.arch}</TableCell>
-										<TableCell>{formatSize(pkg.flatsize)}</TableCell>
 									</TableRow>
 								{/each}
 							</TableBody>

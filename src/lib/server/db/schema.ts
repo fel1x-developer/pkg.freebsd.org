@@ -1,10 +1,10 @@
 import { pgTable, serial, integer, text, jsonb, pgEnum } from 'drizzle-orm/pg-core';
 
-export const abi = pgEnum('abi', ['FreeBSD:14:amd64']);
-export const arch = pgEnum('arch', ['freebsd:14:x86:64']);
+export const abi = pgEnum('abi', ['FreeBSD:14:*', 'FreeBSD:14:amd64']);
+export const arch = pgEnum('arch', ['freebsd:14:*', 'freebsd:14:x86:64']);
 export const licenseLogic = pgEnum('license_logic', ['single', 'or', 'and']);
 
-interface annotations {
+export interface annotations {
 	FreeBSD_version: string;
 	build_timestamp: string;
 	built_by: string;
@@ -20,12 +20,12 @@ interface annotations {
 	subpackage: string | null;
 }
 
-interface dependency {
+export interface dependency {
 	origin: string;
 	version: string;
 }
 
-interface message {
+export interface message {
 	message: string;
 	type: string;
 	maximum_version: string;
@@ -40,27 +40,27 @@ export const packages = pgTable('packages', {
 	comment: text('comment').notNull(),
 	maintainer: text('maintainer').notNull(),
 	www: text('www'),
-	repository: text('repository').notNull(),
+	repository: text('repository').notNull().default('latest'),
 	abi: abi('abi').notNull(),
 	arch: arch('arch').notNull(),
 	prefix: text('prefix').notNull(),
 	sum: text('sum').notNull(),
-	flatsize: integer('flatsize').notNull(),
+	flatSize: integer('flat_size'),
 	path: text('path').notNull(),
-	repoPath: text('repo_path').notNull(),
-	licenseLogic: licenseLogic('license_logic').notNull(),
-	licenses: jsonb('licenses').$type<string[]>().notNull(),
-	pkgsize: integer('pkgsize').notNull(),
+	repoPath: text('repo_path'),
+	licenseLogic: licenseLogic('license_logic'),
+	licenses: jsonb('licenses').$type<string[]>(),
+	pkgSize: integer('pkg_size'),
 	description: text('description').notNull(),
 	categories: text('categories').$type<string[]>().notNull(),
 	shlibsRequired: text('shlibs_required').$type<string[]>().notNull(),
 	annotations: jsonb('annotations').$type<annotations>().notNull(),
-	dependences: jsonb('dependences').$type<Record<string, dependency>>().notNull(),
-	options: jsonb('options').$type<Record<string, string>>().notNull(),
-	messages: jsonb('messages').$type<message[]>().notNull(),
-	shlibsProvided: jsonb('shlibs_provided').$type<string[]>().notNull(),
-	users: jsonb('users').$type<string[]>().notNull(),
-	groups: jsonb('groups').$type<string[]>().notNull()
+	dependencies: jsonb('dependencies').$type<Record<string, dependency>>(),
+	options: jsonb('options').$type<Record<string, string>>(),
+	messages: jsonb('messages').$type<message[]>(),
+	shlibsProvided: jsonb('shlibs_provided').$type<string[]>(),
+	users: jsonb('users').$type<string[]>(),
+	groups: jsonb('groups').$type<string[]>()
 });
 
 export type Package = typeof packages.$inferSelect;

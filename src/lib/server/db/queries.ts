@@ -57,7 +57,7 @@ export async function searchPackages({
 				arch: packages.arch,
 				categories: packages.categories,
 				www: packages.www,
-				flatsize: packages.flatsize
+				flatSize: packages.flatSize
 			})
 			.from(packages)
 			.where(whereClause)

@@ -93,21 +93,3 @@ export async function getDistinctRepositories() {
 
 	return result.map((r) => r.repository);
 }
-
-export async function getDistinctABIs() {
-	const result = await db
-		.selectDistinct({ abi: packages.abi })
-		.from(packages)
-		.orderBy(packages.abi);
-
-	return result.map((r) => r.abi);
-}
-
-export async function getDistinctArchitectures() {
-	const result = await db
-		.selectDistinct({ arch: packages.arch })
-		.from(packages)
-		.orderBy(packages.arch);
-
-	return result.map((r) => r.arch);
-}

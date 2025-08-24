@@ -1,11 +1,6 @@
 import { query } from '$app/server';
 import * as v from 'valibot';
-import {
-	searchPackages,
-	getDistinctRepositories,
-	getDistinctABIs,
-	getDistinctArchitectures
-} from '$lib/server/db/queries';
+import { searchPackages, getDistinctRepositories } from '$lib/server/db/queries';
 import { abi as abiEnum, arch as archEnum } from '$lib/server/db/schema';
 
 const PackageSearchSchema = v.object({

@@ -5,7 +5,6 @@
 	import faviconSvg from '$lib/assets/favicon.svg';
 	import faviconIco from '$lib/assets/favicon.ico';
 	import appleTouchIcon from '$lib/assets/apple-touch-icon.png';
-	import siteWebmanifest from '$lib/assets/site.webmanifest';
 
 	let { children } = $props();
 </script>

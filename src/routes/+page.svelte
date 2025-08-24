@@ -23,15 +23,17 @@
 	// Form inputs
 	let searchQuery = $state($page.url.searchParams.get('q') || '');
 	let selectedRepo = $state($page.url.searchParams.get('repository') || '');
-	let selectedAbi = $state($page.url.searchParams.get('abi') || '');
-	let selectedArch = $state($page.url.searchParams.get('arch') || '');
+	let selectedAbiVersion = $state($page.url.searchParams.get('abi') || '');
+	let selectedAbiArch = $state($page.url.searchParams.get('arch') || '');
+	let selectedPeriod = $state($page.url.searchParams.get('period') || '');
 
 	// Search parameters (only updated when search is performed)
 	let searchParams = $state({
 		query: $page.url.searchParams.get('q') || '',
 		repository: $page.url.searchParams.get('repository') || '',
-		abi: $page.url.searchParams.get('abi') || '',
-		architecture: $page.url.searchParams.get('arch') || '',
+		abiVersion: $page.url.searchParams.get('abi') || '',
+		abiArch: $page.url.searchParams.get('arch') || '',
+		period: $page.url.searchParams.get('period') || '',
 		page: Number($page.url.searchParams.get('page')) || 1
 	});
 
@@ -44,8 +46,9 @@
 		searchParams = {
 			query: searchQuery,
 			repository: selectedRepo,
-			abi: selectedAbi,
-			architecture: selectedArch,
+			abiVersion: selectedAbiVersion,
+			abiArch: selectedAbiArch,
+			period: selectedPeriod,
 			page: 1
 		};
 		updateUrl();
@@ -54,13 +57,14 @@
 	function handleReset() {
 		searchQuery = '';
 		selectedRepo = '';
-		selectedAbi = '';
-		selectedArch = '';
+		selectedAbiVersion = '';
+		selectedAbiArch = '';
 		searchParams = {
 			query: '',
 			repository: '',
-			abi: '',
-			architecture: '',
+			abiVersion: '',
+			abiArch: '',
+			period: '',
 			page: 1
 		};
 		updateUrl();
@@ -76,8 +80,9 @@
 		const params = new SvelteURLSearchParams();
 		if (searchParams.query) params.set('q', searchParams.query);
 		if (searchParams.repository) params.set('repository', searchParams.repository);
-		if (searchParams.abi) params.set('abi', searchParams.abi);
-		if (searchParams.architecture) params.set('arch', searchParams.architecture);
+		if (searchParams.abiVersion) params.set('abi', searchParams.abiVersion);
+		if (searchParams.abiArch) params.set('arch', searchParams.abiArch);
+		if (searchParams.period) params.set('period', searchParams.period);
 		if (searchParams.page > 1) params.set('page', searchParams.page.toString());
 
 		const newUrl = params.toString() ? `?${params}` : '/';
@@ -125,13 +130,44 @@
 				</div>
 
 				{#await filterOptions}
-					<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+						<Skeleton class="h-10" />
 						<Skeleton class="h-10" />
 						<Skeleton class="h-10" />
 						<Skeleton class="h-10" />
 					</div>
 				{:then filters}
-					<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+						<div>
+							<label for="abi-select" class="mb-2 block text-sm font-medium">ABI</label>
+							<Select.Root type="single" bind:value={selectedAbiVersion}>
+								<Select.Trigger id="abi-select" class="w-full">
+									{selectedAbiVersion || 'All ABIs'}
+								</Select.Trigger>
+								<Select.Content>
+									<Select.Item value="">All ABIs</Select.Item>
+									{#each filters.abiVersions as abiVersion (abiVersion)}
+										<Select.Item value={abiVersion}>{abiVersion}</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						</div>
+
+						<div>
+							<label for="arch-select" class="mb-2 block text-sm font-medium">Architecture</label>
+							<Select.Root type="single" bind:value={selectedAbiArch}>
+								<Select.Trigger id="arch-select" class="w-full">
+									{selectedAbiArch || 'All Architectures'}
+								</Select.Trigger>
+								<Select.Content>
+									<Select.Item value="">All Architectures</Select.Item>
+									{#each filters.abiArchs as abiArch (abiArch)}
+										<Select.Item value={abiArch}>{abiArch}</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						</div>
+
 						<div>
 							<label for="repository-select" class="mb-2 block text-sm font-medium"
 								>Repository</label
@@ -150,30 +186,15 @@
 						</div>
 
 						<div>
-							<label for="abi-select" class="mb-2 block text-sm font-medium">ABI</label>
-							<Select.Root type="single" bind:value={selectedAbi}>
-								<Select.Trigger id="abi-select" class="w-full">
-									{selectedAbi || 'All ABIs'}
+							<label for="period-select" class="mb-2 block text-sm font-medium">Period</label>
+							<Select.Root type="single" bind:value={selectedPeriod}>
+								<Select.Trigger id="period-select" class="w-full">
+									{selectedPeriod || 'All Periods'}
 								</Select.Trigger>
 								<Select.Content>
-									<Select.Item value="">All ABIs</Select.Item>
-									{#each filters.abis as abi (abi)}
-										<Select.Item value={abi}>{abi}</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
-						</div>
-
-						<div>
-							<label for="arch-select" class="mb-2 block text-sm font-medium">Architecture</label>
-							<Select.Root type="single" bind:value={selectedArch}>
-								<Select.Trigger id="arch-select" class="w-full">
-									{selectedArch || 'All Architectures'}
-								</Select.Trigger>
-								<Select.Content>
-									<Select.Item value="">All Architectures</Select.Item>
-									{#each filters.architectures as arch (arch)}
-										<Select.Item value={arch}>{arch}</Select.Item>
+									<Select.Item value="">All Periods</Select.Item>
+									{#each filters.periods as period (period)}
+										<Select.Item value={period}>{period}</Select.Item>
 									{/each}
 								</Select.Content>
 							</Select.Root>
@@ -233,9 +254,10 @@
 								<TableRow>
 									<TableHead>Package</TableHead>
 									<TableHead>Version</TableHead>
-									<TableHead>Repository</TableHead>
-									<TableHead>ABI</TableHead>
+									<TableHead>ABI Version</TableHead>
 									<TableHead>Architecture</TableHead>
+									<TableHead>Repository</TableHead>
+									<TableHead>Period</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -248,11 +270,14 @@
 											</div>
 										</TableCell>
 										<TableCell>{pkg.version}</TableCell>
+										<TableCell>{pkg.abiVersion}</TableCell>
+										<TableCell>{pkg.abiArch}</TableCell>
 										<TableCell>
 											<Badge variant="secondary">{pkg.repository}</Badge>
 										</TableCell>
-										<TableCell>{pkg.abi}</TableCell>
-										<TableCell>{pkg.arch}</TableCell>
+										<TableCell>
+											<Badge variant="secondary">{pkg.period}</Badge>
+										</TableCell>
 									</TableRow>
 								{/each}
 							</TableBody>

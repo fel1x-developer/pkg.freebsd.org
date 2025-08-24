@@ -1,12 +1,19 @@
 import { db } from './index.js';
-import { packages, abi as abiEnum, arch as archEnum } from './schema.js';
+import {
+	packages,
+	abiVersion as abiVersionEnum,
+	abiArch as abiArchEnum,
+	repository as repositoryEnum,
+	period as periodEnum
+} from './schema.js';
 import { count, ilike, or, and, desc, eq } from 'drizzle-orm';
 
 export interface SearchParams {
 	query?: string;
-	repository?: string;
-	abi?: (typeof abiEnum.enumValues)[number];
-	architecture?: (typeof archEnum.enumValues)[number];
+	repository?: (typeof repositoryEnum.enumValues)[number];
+	abiVersion?: (typeof abiVersionEnum.enumValues)[number];
+	abiArch?: (typeof abiArchEnum.enumValues)[number];
+	period?: (typeof periodEnum.enumValues)[number];
 	page?: number;
 	limit?: number;
 }
@@ -14,8 +21,9 @@ export interface SearchParams {
 export async function searchPackages({
 	query = '',
 	repository,
-	abi,
-	architecture,
+	abiVersion,
+	abiArch,
+	period,
 	page = 1,
 	limit = 50
 }: SearchParams) {
@@ -33,12 +41,16 @@ export async function searchPackages({
 		conditions.push(eq(packages.repository, repository));
 	}
 
-	if (abi) {
-		conditions.push(eq(packages.abi, abi));
+	if (abiVersion) {
+		conditions.push(eq(packages.abiVersion, abiVersion));
 	}
 
-	if (architecture) {
-		conditions.push(eq(packages.arch, architecture));
+	if (abiArch) {
+		conditions.push(eq(packages.abiArch, abiArch));
+	}
+
+	if (period) {
+		conditions.push(eq(packages.period, period));
 	}
 
 	const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
@@ -48,16 +60,12 @@ export async function searchPackages({
 			.select({
 				id: packages.id,
 				name: packages.name,
-				version: packages.version,
-				comment: packages.comment,
-				origin: packages.origin,
+				abiVersion: packages.abiVersion,
+				abiArch: packages.abiArch,
 				repository: packages.repository,
-				maintainer: packages.maintainer,
-				abi: packages.abi,
-				arch: packages.arch,
-				categories: packages.categories,
-				www: packages.www,
-				flatSize: packages.flatSize
+				period: packages.period,
+				version: packages.version,
+				comment: packages.comment
 			})
 			.from(packages)
 			.where(whereClause)
@@ -83,13 +91,4 @@ export async function getPackageById(id: number) {
 	const result = await db.select().from(packages).where(eq(packages.id, id)).limit(1);
 
 	return result[0];
-}
-
-export async function getDistinctRepositories() {
-	const result = await db
-		.selectDistinct({ repository: packages.repository })
-		.from(packages)
-		.orderBy(packages.repository);
-
-	return result.map((r) => r.repository);
 }

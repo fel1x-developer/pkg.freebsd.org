@@ -6,7 +6,7 @@ import {
 	repository as repositoryEnum,
 	period as periodEnum
 } from './schema.js';
-import { count, ilike, or, and, desc, eq, sql } from 'drizzle-orm';
+import { count, ilike, or, and, asc, eq, sql } from 'drizzle-orm';
 
 export interface SearchPackagesParams {
 	query?: string;
@@ -82,8 +82,8 @@ export async function searchPackages({
 					WHEN ${packages.name} ILIKE ${`%${query}%`} THEN 1 
 					ELSE 2 
 				END`
-					: desc(packages.name),
-				desc(packages.name)
+					: asc(packages.name),
+				asc(packages.name)
 			)
 			.limit(limit)
 			.offset(offset),

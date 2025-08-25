@@ -88,6 +88,32 @@
 		const newUrl = params.toString() ? `?${params}` : '/';
 		goto(newUrl, { replaceState: true, keepFocus: true });
 	}
+
+	function handleFilterClick(filterType: string, value: string) {
+		switch (filterType) {
+			case 'abiVersion':
+				selectedAbiVersion = value;
+				break;
+			case 'abiArch':
+				selectedAbiArch = value;
+				break;
+			case 'repository':
+				selectedRepo = value;
+				break;
+			case 'period':
+				selectedPeriod = value;
+				break;
+		}
+		searchParams = {
+			query: searchQuery,
+			repository: filterType === 'repository' ? value : selectedRepo,
+			abiVersion: filterType === 'abiVersion' ? value : selectedAbiVersion,
+			abiArch: filterType === 'abiArch' ? value : selectedAbiArch,
+			period: filterType === 'period' ? value : selectedPeriod,
+			page: 1
+		};
+		updateUrl();
+	}
 </script>
 
 <svelte:head>
@@ -270,13 +296,41 @@
 											</div>
 										</TableCell>
 										<TableCell>{pkg.version}</TableCell>
-										<TableCell>{pkg.abiVersion}</TableCell>
-										<TableCell>{pkg.abiArch}</TableCell>
 										<TableCell>
-											<Badge variant="secondary">{pkg.repository}</Badge>
+											<button
+												onclick={() => handleFilterClick('abiVersion', pkg.abiVersion)}
+												class="cursor-pointer text-primary hover:underline"
+											>
+												{pkg.abiVersion}
+											</button>
 										</TableCell>
 										<TableCell>
-											<Badge variant="secondary">{pkg.period}</Badge>
+											<button
+												onclick={() => handleFilterClick('abiArch', pkg.abiArch)}
+												class="cursor-pointer text-primary hover:underline"
+											>
+												{pkg.abiArch}
+											</button>
+										</TableCell>
+										<TableCell>
+											<button
+												onclick={() => handleFilterClick('repository', pkg.repository)}
+												class="cursor-pointer"
+											>
+												<Badge variant="secondary" class="hover:bg-secondary/80">
+													{pkg.repository}
+												</Badge>
+											</button>
+										</TableCell>
+										<TableCell>
+											<button
+												onclick={() => handleFilterClick('period', pkg.period)}
+												class="cursor-pointer"
+											>
+												<Badge variant="secondary" class="hover:bg-secondary/80">
+													{pkg.period}
+												</Badge>
+											</button>
 										</TableCell>
 									</TableRow>
 								{/each}

@@ -73,7 +73,7 @@ function transformPackage(jsonPackage: JsonPackage, registry: Registry): NewPack
 		licenseLogic: jsonPackage.licenselogic,
 		licenses: jsonPackage.licenses || null,
 		pkgSize: jsonPackage.pkgsize,
-		description: jsonPackage.desc,
+		description: jsonPackage.desc.replace(/[\n\r]+/g, ' '),
 		categories: jsonPackage.categories,
 		shlibsRequired: jsonPackage.shlibs_required || [],
 		annotations: jsonPackage.annotations,

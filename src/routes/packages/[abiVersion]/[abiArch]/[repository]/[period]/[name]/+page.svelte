@@ -66,6 +66,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>FreeBSD | {name} - {abiVersion}-{abiArch}-{repository}-{period}</title>
+</svelte:head>
+
 <div class="container mx-auto px-4 py-8">
 	<!-- Back button -->
 	<div class="mb-6">

@@ -1,4 +1,4 @@
-export const repositories = ['base', 'kmod', 'ports'] as const;
+export const repositories = ['base', 'kmods', 'ports'] as const;
 export const periods = [
 	'latest',
 	'weekly',

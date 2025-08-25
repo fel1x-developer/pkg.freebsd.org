@@ -1,8 +1,12 @@
 export const repositories = ['base', 'kmods', 'ports'] as const;
 export const periods = [
 	'latest',
+	'latest-2',
+	'latest-3',
 	'weekly',
 	'quarterly',
+	'quarterly-2',
+	'quarterly-3',
 	'release-0',
 	'release-1',
 	'release-2',

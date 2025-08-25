@@ -147,7 +147,7 @@
 					<CardTitle class="text-3xl font-bold">FreeBSD Package Search</CardTitle>
 					<p class="mt-1 text-muted-foreground">
 						Search and explore FreeBSD packages across different ABI versions, architectures,
-						repositories, and periods. Find packages by name or description.
+						repositories, and periods. Find packages by name or comment.
 					</p>
 				</div>
 				<Button onclick={toggleMode} variant="outline" size="icon">

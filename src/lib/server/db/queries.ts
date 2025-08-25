@@ -6,7 +6,7 @@ import {
 	repository as repositoryEnum,
 	period as periodEnum
 } from './schema.js';
-import { count, ilike, or, and, desc, eq } from 'drizzle-orm';
+import { count, ilike, or, and, desc, eq, sql } from 'drizzle-orm';
 
 export interface SearchPackagesParams {
 	query?: string;
@@ -40,9 +40,7 @@ export async function searchPackages({
 	const conditions = [];
 
 	if (query) {
-		conditions.push(
-			or(ilike(packages.name, `%${query}%`), ilike(packages.description, `%${query}%`))
-		);
+		conditions.push(or(ilike(packages.name, `%${query}%`), ilike(packages.comment, `%${query}%`)));
 	}
 
 	if (repository) {
@@ -77,7 +75,16 @@ export async function searchPackages({
 			})
 			.from(packages)
 			.where(whereClause)
-			.orderBy(desc(packages.name))
+			.orderBy(
+				query
+					? sql`CASE 
+					WHEN LOWER(${packages.name}) = LOWER(${query}) THEN 0 
+					WHEN ${packages.name} ILIKE ${`%${query}%`} THEN 1 
+					ELSE 2 
+				END`
+					: desc(packages.name),
+				desc(packages.name)
+			)
 			.limit(limit)
 			.offset(offset),
 		db

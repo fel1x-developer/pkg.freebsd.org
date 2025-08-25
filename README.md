@@ -56,6 +56,6 @@ As a part of the FreeBSD project, this project is licensed under the FreeBSD lic
 
 **A:** Currently, I'm using free tier of Vercel and Neon since I cannot afford to host this on FreeBSD, whether it is self hosted or on a cloud provider. I'm not even sure if I can host it on FreeBSD since Node.js and NPM ecosystem support is not good enough on FreeBSD. Using Vercel and Neon removes the need to worry about hosting configuration and database management. Also, they use serverless architecture, which is a good fit for this project.
 
-**Q:** Why the current website only host latest packages on FreeBSD 14 (amd64)?
+**Q:** Why the current website only host packages on FreeBSD 14 (amd64)? Why not host packages on other architectures and ABI versions?
 
 **A:** Again, this is a cost issue. Neon's free tier provides 500MB of storage, which is not enough for this project. On amd64, ports takes ~57MB, base takes ~0.4MB, and kmods takes ~0.3MB. Providing other architectures, ABI versions, and periods would require more storage, and the current limit of 500MB is not enough.

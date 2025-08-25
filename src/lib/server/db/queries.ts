@@ -8,7 +8,7 @@ import {
 } from './schema.js';
 import { count, ilike, or, and, desc, eq } from 'drizzle-orm';
 
-export interface SearchParams {
+export interface SearchPackagesParams {
 	query?: string;
 	repository?: (typeof repositoryEnum.enumValues)[number];
 	abiVersion?: (typeof abiVersionEnum.enumValues)[number];
@@ -16,6 +16,14 @@ export interface SearchParams {
 	period?: (typeof periodEnum.enumValues)[number];
 	page?: number;
 	limit?: number;
+}
+
+export interface SearchPackageParams {
+	repository: (typeof repositoryEnum.enumValues)[number];
+	abiVersion: (typeof abiVersionEnum.enumValues)[number];
+	abiArch: (typeof abiArchEnum.enumValues)[number];
+	period: (typeof periodEnum.enumValues)[number];
+	name: string;
 }
 
 export async function searchPackages({
@@ -26,7 +34,7 @@ export async function searchPackages({
 	period,
 	page = 1,
 	limit = 50
-}: SearchParams) {
+}: SearchPackagesParams) {
 	const offset = (page - 1) * limit;
 
 	const conditions = [];
@@ -85,6 +93,31 @@ export async function searchPackages({
 		totalPages: Math.ceil(totalCount / limit),
 		currentPage: page
 	};
+}
+
+export async function searchPackage({
+	repository,
+	abiVersion,
+	abiArch,
+	period,
+	name
+}: SearchPackageParams) {
+	const conditions = [];
+	conditions.push(eq(packages.repository, repository));
+	conditions.push(eq(packages.abiVersion, abiVersion));
+	conditions.push(eq(packages.abiArch, abiArch));
+	conditions.push(eq(packages.period, period));
+	conditions.push(eq(packages.name, name));
+
+	const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+	const item = await db.select().from(packages).where(whereClause).limit(1);
+
+	if (item.length === 0) {
+		return null;
+	}
+
+	return item[0];
 }
 
 export async function getPackageById(id: number) {

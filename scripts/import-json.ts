@@ -15,13 +15,7 @@ import type {
 } from '../src/lib/server/db/schema.js';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-
-interface RegistryInfo {
-	abiVersion: (typeof abiVersion.enumValues)[number];
-	abiArch: (typeof abiArch.enumValues)[number];
-	repository: (typeof repository.enumValues)[number];
-	period: (typeof period.enumValues)[number];
-}
+import type { Registry } from '../src/lib/registry.js';
 
 interface JsonPackage {
 	name: string;
@@ -60,9 +54,9 @@ if (!process.env.DATABASE_URL) {
 const client = neon(process.env.DATABASE_URL);
 const db = drizzle(client);
 
-function transformPackage(jsonPackage: JsonPackage, registryInfo: RegistryInfo): NewPackage {
+function transformPackage(jsonPackage: JsonPackage, registry: Registry): NewPackage {
 	return {
-		...registryInfo,
+		...registry,
 		name: jsonPackage.name,
 		origin: jsonPackage.origin,
 		version: jsonPackage.version,
@@ -92,11 +86,7 @@ function transformPackage(jsonPackage: JsonPackage, registryInfo: RegistryInfo):
 	};
 }
 
-async function importPackages(
-	filePath: string,
-	batchSize: number = 1000,
-	registryInfo: RegistryInfo
-) {
+async function importPackages(filePath: string, batchSize: number = 1000, registry: Registry) {
 	console.log(`Reading JSON file: ${filePath}`);
 
 	const fileContent = readFileSync(filePath, 'utf-8');
@@ -121,9 +111,7 @@ async function importPackages(
 
 	for (let i = 0; i < packagesToImport.length; i += batchSize) {
 		const batch = packagesToImport.slice(i, i + batchSize);
-		const transformedBatch = batch.map((jsonPackage) =>
-			transformPackage(jsonPackage, registryInfo)
-		);
+		const transformedBatch = batch.map((jsonPackage) => transformPackage(jsonPackage, registry));
 
 		try {
 			await db.insert(packages).values(transformedBatch);
@@ -152,7 +140,7 @@ async function main() {
 	}
 
 	const filePath = resolve(args[0]);
-	const registryInfo: RegistryInfo = {
+	const registry: Registry = {
 		abiVersion: args[1] as (typeof abiVersion.enumValues)[number],
 		abiArch: args[2] as (typeof abiArch.enumValues)[number],
 		repository: args[3] as (typeof repository.enumValues)[number],
@@ -166,7 +154,7 @@ async function main() {
 	}
 
 	try {
-		await importPackages(filePath, batchSize, registryInfo);
+		await importPackages(filePath, batchSize, registry);
 	} catch (error) {
 		console.error('Import failed:', error);
 		process.exit(1);

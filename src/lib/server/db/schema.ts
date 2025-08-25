@@ -1,28 +1,10 @@
 import { pgTable, serial, text, jsonb, pgEnum, bigint } from 'drizzle-orm/pg-core';
+import { abiVersions, abiArchs, repositories, periods } from '../../registry';
 
-export const abiVersion = pgEnum('abi_version', ['13', '14', '15']);
-export const abiArch = pgEnum('abi_arch', [
-	'amd64',
-	'aarch64',
-	'i386',
-	'armv6',
-	'armv7',
-	'powerpc',
-	'powerpc64',
-	'powerpc64le'
-]);
-export const repository = pgEnum('repository', ['base', 'kmod', 'ports']);
-export const period = pgEnum('period', [
-	'latest',
-	'weekly',
-	'quarterly',
-	'release-0',
-	'release-1',
-	'release-2',
-	'release-3',
-	'release-4',
-	'release-5'
-]);
+export const abiVersion = pgEnum('abi_version', abiVersions);
+export const abiArch = pgEnum('abi_arch', abiArchs);
+export const repository = pgEnum('repository', repositories);
+export const period = pgEnum('period', periods);
 export const licenseLogic = pgEnum('license_logic', ['single', 'or', 'and']);
 
 export interface annotations {
@@ -76,8 +58,8 @@ export const packages = pgTable('packages', {
 	licenses: jsonb('licenses').$type<string[]>(),
 	pkgSize: bigint('pkg_size', { mode: 'number' }),
 	description: text('description').notNull(),
-	categories: text('categories').$type<string[]>().notNull(),
-	shlibsRequired: text('shlibs_required').$type<string[]>().notNull(),
+	categories: jsonb('categories').$type<string[]>(),
+	shlibsRequired: jsonb('shlibs_required').$type<string[]>(),
 	annotations: jsonb('annotations').$type<annotations>().notNull(),
 	dependencies: jsonb('dependencies').$type<Record<string, dependency>>(),
 	options: jsonb('options').$type<Record<string, string>>(),

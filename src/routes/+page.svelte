@@ -20,14 +20,14 @@
 	import { toggleMode } from 'mode-watcher';
 	import { SvelteURLSearchParams } from 'svelte/reactivity';
 
-	// Form inputs
+	// Form inputs (reactive to URL changes)
 	let searchQuery = $state($page.url.searchParams.get('q') || '');
 	let selectedRepo = $state($page.url.searchParams.get('repository') || '');
 	let selectedAbiVersion = $state($page.url.searchParams.get('abi') || '');
 	let selectedAbiArch = $state($page.url.searchParams.get('arch') || '');
 	let selectedPeriod = $state($page.url.searchParams.get('period') || '');
 
-	// Search parameters (only updated when search is performed)
+	// Search parameters (reactive to URL changes)
 	let searchParams = $state({
 		query: $page.url.searchParams.get('q') || '',
 		repository: $page.url.searchParams.get('repository') || '',
@@ -35,6 +35,25 @@
 		abiArch: $page.url.searchParams.get('arch') || '',
 		period: $page.url.searchParams.get('period') || '',
 		page: Number($page.url.searchParams.get('page')) || 1
+	});
+
+	// Sync state with URL parameters on navigation
+	$effect(() => {
+		const urlParams = $page.url.searchParams;
+		searchQuery = urlParams.get('q') || '';
+		selectedRepo = urlParams.get('repository') || '';
+		selectedAbiVersion = urlParams.get('abi') || '';
+		selectedAbiArch = urlParams.get('arch') || '';
+		selectedPeriod = urlParams.get('period') || '';
+
+		searchParams = {
+			query: urlParams.get('q') || '',
+			repository: urlParams.get('repository') || '',
+			abiVersion: urlParams.get('abi') || '',
+			abiArch: urlParams.get('arch') || '',
+			period: urlParams.get('period') || '',
+			page: Number(urlParams.get('page')) || 1
+		};
 	});
 
 	const filterOptions = getFilterOptions();
@@ -291,7 +310,10 @@
 									<TableRow>
 										<TableCell>
 											<div>
-												<div class="font-medium">{pkg.name}</div>
+												<a
+													href={`/packages/${pkg.abiVersion}/${pkg.abiArch}/${pkg.repository}/${pkg.period}/${pkg.name}`}
+													class="font-medium hover:underline">{pkg.name}</a
+												>
 												<div class="text-sm text-muted-foreground">{pkg.comment}</div>
 											</div>
 										</TableCell>

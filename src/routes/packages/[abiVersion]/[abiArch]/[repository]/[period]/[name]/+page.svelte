@@ -68,6 +68,10 @@
 
 <svelte:head>
 	<title>FreeBSD | {name} - {abiVersion}-{abiArch}-{repository}-{period}</title>
+	<meta
+		name="description"
+		content={`Details for FreeBSD package ${name} - ${abiVersion}-${abiArch}-${repository}-${period}`}
+	/>
 </svelte:head>
 
 <div class="container mx-auto px-4 py-8">

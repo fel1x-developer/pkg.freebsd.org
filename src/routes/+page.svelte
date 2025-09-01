@@ -137,6 +137,10 @@
 
 <svelte:head>
 	<title>FreeBSD | Package Search</title>
+	<meta
+		name="description"
+		content="Search and explore FreeBSD packages across different ABI versions, architectures, repositories, and periods. Find packages by name or comment."
+	/>
 </svelte:head>
 
 <div class="container mx-auto px-4 py-8">
